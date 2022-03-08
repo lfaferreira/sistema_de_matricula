@@ -1,8 +1,8 @@
 import re
 
-#Codigo do "Woss" no stackoverflow link https://pt.stackoverflow.com/questions/64608/como-validar-e-calcular-o-d%C3%ADgito-de-controle-de-um-cpf
+#Codigo do validacao_cpf é do "Woss" e está no stackoverflow, link https://pt.stackoverflow.com/questions/64608/como-validar-e-calcular-o-d%C3%ADgito-de-controle-de-um-cpf
 
-def validacao(cpf: str) -> bool:
+def validacao_cpf(cpf: str) -> bool:
 
     """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
 
@@ -50,3 +50,16 @@ def validacao(cpf: str) -> bool:
         return False
 
     return True
+
+def validacao_nome(nome_inserido: str) -> str:
+
+    for digito in nome_inserido.split():
+        if not digito.isalpha():
+            return False
+
+    nome_seprado = nome_inserido.title().split()
+    nome = ''
+    for posicao in range(0, len(nome_seprado)):
+        nome += nome_seprado[posicao] + ' '
+
+    return nome
