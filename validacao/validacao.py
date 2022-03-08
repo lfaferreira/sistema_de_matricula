@@ -18,11 +18,11 @@ def validacao_cpf(cpf: str) -> bool:
 
     Exemplos:
 
-    >>> validacao('529.982.247-25')
+    >>> validacao_cpf('529.982.247-25')
     True
-    >>> validacao('52998224725')
+    >>> validacao_cpf('52998224725')
     False
-    >>> validacao('111.111.111-11')
+    >>> validacao_cpf('111.111.111-11')
     False
     """
 
@@ -53,13 +53,70 @@ def validacao_cpf(cpf: str) -> bool:
 
 def validacao_nome(nome_inserido: str) -> str:
 
+    """ Efetua a validação do nome, tanto formatação quando caracteres verificadores.
+
+    Parâmetros:
+        nome_inserido (str): Nome a ser validado
+
+    Retorno:
+        str:
+            - "Nome invalido", quando a string não formada apenas por letras
+            - Nome formatado (retira excesso de espaços e coloca cada primeira letra maiscula), quando a string contem apenas letras
+
+    Exemplos:
+
+    >>> validacao_nome('              Enalde         Pereira      ')
+    'Enalde Pereira'
+    >>> validacao_nome('52998224725')
+    'Nome Invalido'
+    >>> validacao_nome('][]~~ç/;´çl')
+    'Nome Invalido'
+    >>> validacao_nome('Iêda Ágnes')
+    'Iêda Ágnes'
+    """
+
     for digito in nome_inserido.split():
         if not digito.isalpha():
-            return False
+            return 'Nome Invalido'
 
     nome_seprado = nome_inserido.title().split()
     nome = ''
     for posicao in range(0, len(nome_seprado)):
-        nome += nome_seprado[posicao] + ' '
+        nome += nome_seprado[posicao] + ' ' if posicao < len(nome_seprado)-1 else nome_seprado[posicao]
 
     return nome
+
+def validacao_telefone(telefone_inserido: str) -> str:
+
+    """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
+
+    Parâmetros:
+        cpf (str): CPF a ser validado
+
+    Retorno:
+        bool:
+            - Falso, quando o CPF não possuir o formato 999.999.999-99;
+            - Falso, quando o CPF não possuir 11 caracteres numéricos;
+            - Falso, quando os dígitos verificadores forem inválidos;
+            - Verdadeiro, caso contrário.
+
+    Exemplos:
+
+    >>> validacao_telefone('529.982.247-25')
+    'Telefone Invalido'
+    >>> validacao_telefone('pedroMracos')
+    'Telefone Invalido'
+    >>> validacao_telefone('11111199')
+    'Tamanho do Numero Invalido'
+    >>> validacao_telefone('81995329479')
+    '81995329479'
+    """
+
+    for digito in telefone_inserido:
+        if not digito.isdigit():
+            return 'Telefone Invalido'
+
+    if len(telefone_inserido) < 10:
+        return 'Tamanho do Numero Invalido'
+
+    return telefone_inserido
