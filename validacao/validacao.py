@@ -86,37 +86,36 @@ def validacao_nome(nome_inserido: str) -> str:
 
     return nome
 
-def validacao_telefone(telefone_inserido: str) -> str:
+def validacao_telefone(telefone_inserido: str) -> bool:
 
-    """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
+    """ Efetua a validação do Telefone, tanto verificação do tamanho quanto dígito verificadores.
 
     Parâmetros:
-        cpf (str): CPF a ser validado
+        telefone_inserido (str): Telefone a ser validado
 
     Retorno:
         bool:
-            - Falso, quando o CPF não possuir o formato 999.999.999-99;
-            - Falso, quando o CPF não possuir 11 caracteres numéricos;
-            - Falso, quando os dígitos verificadores forem inválidos;
-            - Verdadeiro, caso contrário.
+            - False, quando os dígitos verificadores forem inválidos;
+            - False, quando o telefone for menor que 10 caracteres numéricos;
+            - True, caso contrário.
 
     Exemplos:
 
     >>> validacao_telefone('529.982.247-25')
-    'Telefone Invalido'
+    False
     >>> validacao_telefone('pedroMracos')
-    'Telefone Invalido'
+    False
     >>> validacao_telefone('11111199')
-    'Tamanho do Numero Invalido'
+    False
     >>> validacao_telefone('81995329479')
-    '81995329479'
+    True
     """
 
     for digito in telefone_inserido:
         if not digito.isdigit():
-            return 'Telefone Invalido'
+            return False
 
     if len(telefone_inserido) < 10:
-        return 'Tamanho do Numero Invalido'
+        return False
 
-    return telefone_inserido
+    return True
