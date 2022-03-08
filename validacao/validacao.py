@@ -1,51 +1,52 @@
-class Validacao:
-    def __init__(self):
-        self.__LIMITE_PRIMEIRA_VALIDACAO = 10
-        self.__LIMITE_SEGUNDA_VALIDACAO = 11
-        self.__INDICE_CPF_PRIMEIRA_VALIDACAO = 9
-        self.__INDICE_CPF_SEGUNDA_VALIDACAO = 10
-        self.__CPFS_INVALIDOS = ['00000000000',
-                                 '11111111111',
-                                 '22222222222',
-                                 '33333333333',
-                                 '44444444444',
-                                 '55555555555',
-                                 '66666666666',
-                                 '77777777777',
-                                 '88888888888',
-                                 '99999999999']
+import re
 
-    def valida_cpf(self, cpf):
-        cpf = self.__formata_cpf(cpf)
-        if self.__valida_tamanho_cpf(cpf) and self.__não_eh_cpfs_invalidos(cpf):
-            cpf_multiplicado = self.__multiplica_cpf(cpf, self.__LIMITE_PRIMEIRA_VALIDACAO)
-            if self.__valida_divisão_do_cpf_multiplicado(cpf_multiplicado, cpf, self.__INDICE_CPF_PRIMEIRA_VALIDACAO):
-                cpf_multiplicado = self.__multiplica_cpf(cpf, self.__LIMITE_SEGUNDA_VALIDACAO)
-                return self.__valida_divisão_do_cpf_multiplicado(cpf_multiplicado, cpf, self.__INDICE_CPF_SEGUNDA_VALIDACAO)
+#Codigo do "Woss" no stackoverflow link https://pt.stackoverflow.com/questions/64608/como-validar-e-calcular-o-d%C3%ADgito-de-controle-de-um-cpf
+
+def validacao(cpf: str) -> bool:
+
+    """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
+
+    Parâmetros:
+        cpf (str): CPF a ser validado
+
+    Retorno:
+        bool:
+            - Falso, quando o CPF não possuir o formato 999.999.999-99;
+            - Falso, quando o CPF não possuir 11 caracteres numéricos;
+            - Falso, quando os dígitos verificadores forem inválidos;
+            - Verdadeiro, caso contrário.
+
+    Exemplos:
+
+    >>> validacao('529.982.247-25')
+    True
+    >>> validacao('52998224725')
+    False
+    >>> validacao('111.111.111-11')
+    False
+    """
+
+    # Verifica a formatação do CPF
+    if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}', cpf):
         return False
 
-    def __formata_cpf(self, cpf):
-        return cpf.replace('.','').replace('-','').strip()
+    # Obtém apenas os números do CPF, ignorando pontuações
+    numbers = [int(digit) for digit in cpf if digit.isdigit()]
 
-    def __valida_tamanho_cpf(self, cpf):
-        return True if len(cpf) == 11 else False
+    # Verifica se o CPF possui 11 números ou se todos são iguais:
+    if len(numbers) != 11 or len(set(numbers)) == 1:
+        return False
 
-    def __não_eh_cpfs_invalidos(self, cpf):
-        for value in self.__CPFS_INVALIDOS:
-            if cpf == value:
-                return False
-        return True
+    # Validação do primeiro dígito verificador:
+    sum_of_products = sum(a*b for a, b in zip(numbers[0:9], range(10, 1, -1)))
+    expected_digit = (sum_of_products * 10 % 11) % 10
+    if numbers[9] != expected_digit:
+        return False
 
-    def __multiplica_cpf(self, cpf, limite):
-        valor = 0
-        indice = 0
-        for digito in range(limite, 1, -1):
-            valor = valor + (digito * int(cpf[indice]))
-            indice+=1
-        return valor
+    # Validação do segundo dígito verificador:
+    sum_of_products = sum(a*b for a, b in zip(numbers[0:10], range(11, 1, -1)))
+    expected_digit = (sum_of_products * 10 % 11) % 10
+    if numbers[10] != expected_digit:
+        return False
 
-    def __valida_divisão_do_cpf_multiplicado(self, cpf_multiplicado, cpf, indice):
-        resto = abs((cpf_multiplicado*10)%11)
-        if resto == 10:
-            resto = 0
-        return resto == int(cpf[indice])
+    return True
